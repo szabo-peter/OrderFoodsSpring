@@ -1,9 +1,7 @@
 package com.example.food.controller;
 
 
-import com.example.food.model.Food;
 import com.example.food.model.Order;
-import com.example.food.service.FoodService;
 import com.example.food.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

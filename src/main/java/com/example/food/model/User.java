@@ -20,6 +20,8 @@ import javax.persistence.Table;
 public class User {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     String id;
     String email;
     String fullAddress;

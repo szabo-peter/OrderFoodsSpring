@@ -24,31 +24,33 @@ public class OrderService {
     private final FoodRepository foodRepository;
 
     public void createOrder(Order order) {
-
-        User user = userRepository.findById(order.getOrderedBy().getId()).orElse(null);
-        if(!StringUtils.hasText(order.getOrderedBy().getEmail())){
-            throw new ValidateException("Email megadása kötelező!");
-        }
-        if(!StringUtils.hasText(order.getOrderedBy().getFullAddress())){
-            throw new ValidateException("Cím megadása kötelező!");
-        }
-        if (user == null) {
+        if(!StringUtils.hasText(order.getOrderedBy().getId())){
+            if(!StringUtils.hasText(order.getOrderedBy().getEmail())){
+                throw new ValidateException("Email megadása kötelező!");
+            }
+            if(!StringUtils.hasText(order.getOrderedBy().getFullAddress())){
+                throw new ValidateException("Cím megadása kötelező!");
+            }
             User validUser = User.builder()
-                    .id(order.getOrderedBy().getId())
                     .email(order.getOrderedBy().getEmail())
                     .fullAddress(order.getOrderedBy().getFullAddress())
                     .build();
-
             userRepository.save(validUser);
             order.setOrderedBy(validUser);
-        }
-        else{
-            if(!user.getEmail().equals(order.getOrderedBy().getEmail())){
-                throw new ValidateException("Nem egyezik meg a megadott email a tárolt emaillel!");
+        }else{
+            User user = userRepository.findById(order.getOrderedBy().getId()).orElse(null);
+            if (user == null) {
+                throw new ValidateException("Nincs ilyen ID-val rendelkező felshasználó!");
             }
-            if(!user.getFullAddress().equals(order.getOrderedBy().getFullAddress())){
-                throw new ValidateException("Nem egyezik meg a megadott cím a tárolt címmel!");
+            else{
+                if(!user.getEmail().equals(order.getOrderedBy().getEmail())){
+                    throw new ValidateException("Nem egyezik meg a megadott email a tárolt emaillel!");
+                }
+                if(!user.getFullAddress().equals(order.getOrderedBy().getFullAddress())){
+                    throw new ValidateException("Nem egyezik meg a megadott cím a tárolt címmel!");
+                }
             }
+            order.setOrderedBy(user);
         }
         List<Food> foods = new ArrayList<>();
         for (int i = 0; i < order.getFoods().size(); i++) {
